@@ -7,14 +7,16 @@ package twofer
 
 import "fmt"
 
-// Returns the following formatted string depending on the entryString parameter
-// "One for <entryString>, one for me."
+// ShareWith returns the following formatted string depending on the 
+// person parameter.
+// "One for <person>, one for me."
 // parameters:
-// * entryString : string to use in the formatting, replaced by "you" if a
-// zero-length string is passed
-func ShareWith(entryString string) string {
-	if entryString == "" {
-		entryString = "you"
+// * person : string to use in the formatting, replaced by "you" if a
+//            zero-length string is passed.
+func ShareWith(person string) string {
+	template := "One for %s, one for me."
+	if len(person) == 0 {
+		person = "you"
 	}
-	return fmt.Sprintf("One for %s, one for me.", entryString)
+	return fmt.Sprintf(template, person)
 }
