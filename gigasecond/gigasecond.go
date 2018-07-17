@@ -7,11 +7,13 @@ package gigasecond
 
 import "time"
 
-// Adds a gigasecond to an input time
+const GIGASECOND int = 1000000000;
+
+// AddGigaSecond adds a gigasecond to an input time.
 // parameters
 // * inputTime : time.Time structure to which this function will add a
 //				 Gigasecond
 func AddGigasecond(inputTime time.Time) time.Time {
-	gigasecondDuration := time.Duration(1000000000) * time.Second
+	gigasecondDuration := time.Duration(GIGASECOND) * time.Second
 	return inputTime.Add(gigasecondDuration)
 }
