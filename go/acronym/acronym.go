@@ -4,31 +4,27 @@ package acronym
 
 import "strings"
 
-// Generates and acronym our of a string
-// parameters
+// Abbreviate generates an acronym representing a string parameter.
 // * inputString : base string for the acronym. Will be split into words
-// 				   using ' ' or '-' as a separator. Each word will then
-//				   be used to compute the returned acronym
+//				   using ' ' or '-' as a separator. Each word will then
+//                 be used to compute the returned acronym
 func Abbreviate(inputString string) string {
 	// Who knows when we would like another separator...
-	separators := [2]string{" ", "-"}
-	acronym := ""
-	words := []string{inputString}
-	splittedWords :=[]string{}
+	separators := map[rune]struct{}{' ': {}, '-': {}}
+	var lastRune = ' ' // Initialize as a separator to match first rune
+	var acronymBuilder = strings.Builder{}
 
-	// Iterate the separators and words, creating a flattened list
-	for _, separator := range(separators) {
-		splittedWords =[]string{}
-		for _, word := range(words) {
-			splittedWords = append(splittedWords, strings.Split(word, separator)...)
+	for _, currentRune := range inputString {
+		// Check that last rune was a separator
+		if _, isSeparator := separators[lastRune]; isSeparator {
+			// Check that current rune is not a separator
+			if _, isSeparator := separators[currentRune]; !isSeparator {
+				acronymBuilder.Grow(4) // Rune size would be 4 bytes right ?
+				acronymBuilder.WriteRune(currentRune)
+			}
 		}
-		words = splittedWords
+		lastRune = currentRune
 	}
 
-	// Pick the first letter
-	for _, word := range(words) {
-		acronym += (word[:1])
-	}
-
-	return strings.ToUpper(acronym)
+	return strings.ToUpper(acronymBuilder.String())
 }
