@@ -38,8 +38,8 @@ const AND_STRING = " and"
 
 // Verse takes the verse number as an integer parameter, and returns the
 // corresponding verse as a string.
-func Verse(verseIndex int) (verse string) {
-	verse = ""
+func Verse(verseIndex int) string {
+	verse := ""
 
 	verseTemplate := "On the %s day of Christmas my true love gave to me%s."
 
