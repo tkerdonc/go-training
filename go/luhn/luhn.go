@@ -11,8 +11,8 @@ import "regexp"
 	odd digit by two, then substracts 9 to it if the result was over 9.
 	The sum of all these digits is computed, the input is considered
 	valid if said sum is divisible by 10.  */
-func Valid(input string) (ok bool) {
-	ok = false
+func Valid(input string) bool {
+	ok := false
 	digitSum := 0
 
 	spaceStrippingRegex := regexp.MustCompile(" ")
@@ -39,5 +39,5 @@ func Valid(input string) (ok bool) {
 		ok = digitSum%10 == 0
 
 	}
-	return
+	return ok
 }
