@@ -5,33 +5,27 @@ package hamming
 
 import (
 	"errors"
-	"strings"
 )
 
-/*  Distance returns the hamming distance between two dna strands
-    passed as string parameters. Returns -1 if the strands are of
+/*	Distance returns the hamming distance between two dna strands
+	passed as string parameters. Returns -1 if the strands are of
 	different lengths.
-    parameters :
+	parameters :
 		a : strand as a string
 		b : strand as a string
 */
-func Distance(a, b string) (distance int, distanceError error) {
+func Distance(a, b string) (int, error) {
+	distance := 0
 	if len(a) != len(b) {
-		distance = -1
-		distanceError = errors.New("Distance expects strands to be of equal lengths.")
-	} else {
-		distanceError = nil
-		distance = 0
-		var aReader = strings.NewReader(a)
-		var bReader = strings.NewReader(b)
-		aRune, _, aErr := aReader.ReadRune()
-		for aErr == nil {
-			bRune, _, _ := bReader.ReadRune()
-			if aRune != bRune {
-				distance += 1
-			}
-			aRune, _, aErr = aReader.ReadRune()
+		var distanceError = errors.New("Distance expects strands to be of equal lengths.")
+		return distance, distanceError
+	}
+
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			distance += 1
 		}
 	}
-	return
+
+	return distance, nil
 }
