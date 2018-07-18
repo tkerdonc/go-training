@@ -21,19 +21,18 @@ func Hey(remark string) string {
 	if len(nonSilences) == 0 {
 		// This is a non localized teenager, responses are hardcoded
 		return "Fine. Be that way!"
+	}
+	isQuestion, _ := regexp.MatchString(".*\\?[ \t\n\r]*$", remark)
+	hasLowerCase, _ := regexp.MatchString("[a-z]", remark)
+	hasUpperCase, _ := regexp.MatchString("[A-Z]", remark)
+	isShouting := hasUpperCase && !hasLowerCase
+	if isShouting && isQuestion {
+		return "Calm down, I know what I'm doing!"
+	} else if isShouting {
+		return "Whoa, chill out!"
+	} else if isQuestion {
+		return "Sure."
 	} else {
-		isQuestion, _ := regexp.MatchString(".*\\?[ \t\n\r]*$", remark)
-		hasLowerCase, _ := regexp.MatchString("[a-z]", remark)
-		hasUpperCase, _ := regexp.MatchString("[A-Z]", remark)
-		isShouting := hasUpperCase && !hasLowerCase
-		if isShouting && isQuestion {
-			return "Calm down, I know what I'm doing!"
-		} else if isShouting {
-			return "Whoa, chill out!"
-		} else if isQuestion {
-			return "Sure."
-		} else {
-			return "Whatever."
-		}
+		return "Whatever."
 	}
 }
