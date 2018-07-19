@@ -4,22 +4,16 @@ package matrix
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
 
-const KEY_FORMAT string = "%v,%v"
 const ROW_SEPARATOR string = "\n"
 const COLUMN_SEPARATOR string = " "
 
-//  struct representation of a matrix, keep track of its dimensions, as
-//  well as its values, in a map with string keys formatted with
-//  KEY_FORMAT
+//  struct representation of a matrix
 type matrix struct {
-	numCols int
-	numRows int
-	values  map[string]int
+	values [][]int
 }
 
 //  New creates a new matrix object based on a string representation of
@@ -27,12 +21,12 @@ type matrix struct {
 //  lines, each containing the same number of integer values, separated
 //  by spaces.
 func New(matrixString string) (*matrix, error) {
-	var values = make(map[string]int)
 	var numCols int = 0
 	var err error = nil
 
 	rows := strings.Split(matrixString, ROW_SEPARATOR)
 	var numRows int = len(rows)
+	var values = make([][]int, numRows)
 
 	for rowInd, row := range rows {
 		row = strings.Trim(row, " ")
@@ -47,20 +41,19 @@ func New(matrixString string) (*matrix, error) {
 		}
 
 		if err == nil {
-			for colInd, value := range rowCells {
-				key := fmt.Sprintf(KEY_FORMAT, rowInd, colInd)
+			for _, value := range rowCells {
 				intValue, convErr := strconv.Atoi(value)
 				if convErr != nil {
 					err = convErr
 					break
 				}
-				values[key] = intValue
+				values[rowInd] = append(values[rowInd], intValue)
 			}
 		}
 	}
 
 	if err == nil {
-		m := matrix{numCols, numRows, values}
+		m := matrix{values}
 		return &m, err
 	}
 
@@ -69,11 +62,10 @@ func New(matrixString string) (*matrix, error) {
 
 //  Rows returns the list of the rows of a matrix.
 func (m *matrix) Rows() [][]int {
-	var rows = make([][]int, m.numRows)
-	for row := 0; row < m.numRows; row++ {
-		for col := 0; col < m.numCols; col++ {
-			key := fmt.Sprintf(KEY_FORMAT, row, col)
-			rows[row] = append(rows[row], m.values[key])
+	var rows = make([][]int, len(m.values))
+	for row := 0; row < len(m.values); row++ {
+		for col := 0; col < len(m.values[0]); col++ {
+			rows[row] = append(rows[row], m.values[row][col])
 		}
 	}
 	return rows
@@ -81,11 +73,10 @@ func (m *matrix) Rows() [][]int {
 
 //  Cols returns the list of the columns of a matrix
 func (m *matrix) Cols() [][]int {
-	var columns = make([][]int, m.numCols)
-	for col := 0; col < m.numCols; col++ {
-		for row := 0; row < m.numRows; row++ {
-			key := fmt.Sprintf(KEY_FORMAT, row, col)
-			columns[col] = append(columns[col], m.values[key])
+	var columns = make([][]int, len(m.values[0]))
+	for col := 0; col < len(m.values[0]); col++ {
+		for row := 0; row < len(m.values); row++ {
+			columns[col] = append(columns[col], m.values[row][col])
 		}
 	}
 	return columns
@@ -99,10 +90,9 @@ func (m *matrix) Cols() [][]int {
 //    * value : target value for the cell
 func (m *matrix) Set(row int, column int, value int) bool {
 	var ok = false
-	if row >= 0 && row < m.numRows {
-		if column >= 0 && column < m.numCols {
-			key := fmt.Sprintf(KEY_FORMAT, row, column)
-			m.values[key] = value
+	if row >= 0 && row < len(m.values) {
+		if column >= 0 && column < len(m.values[0]) {
+			m.values[row][column] = value
 			ok = true
 		}
 	}
