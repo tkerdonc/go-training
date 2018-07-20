@@ -1,15 +1,29 @@
-// This is a "stub" file.  It's a little start on your solution.
-// It's not a complete solution though; you have to write some code.
-
-// Package acronym should have a package comment that summarizes what it's about.
-// https://golang.org/doc/effective_go.html#commentary
+// This package implements the core functionnality of communication
+// sciences, transforming words into acronyms
 package acronym
 
-// Abbreviate should have a comment documenting it.
-func Abbreviate(s string) string {
-	// Write some code here to pass the test suite.
-	// Then remove all the stock comments.
-	// They're here to help you get started but they only clutter a finished solution.
-	// If you leave them in, reviewers may protest!
-	return ""
+import "strings"
+
+// Abbreviate generates an acronym representing a string parameter.
+// * inputString : base string for the acronym. Will be split into words
+//					using ' ' or '-' as a separator. Each word will then
+//					be used to compute the returned acronym
+func Abbreviate(inputString string) string {
+	// Who knows when we would like another separator...
+	separators := map[rune]struct{}{' ': {}, '-': {}}
+	var lastRune = ' ' // Initialize as a separator to match first rune
+	var acronymBuilder = strings.Builder{}
+
+	for _, currentRune := range inputString {
+		// Check that last rune was a separator
+		if _, isSeparator := separators[lastRune]; isSeparator {
+			// Check that current rune is not a separator
+			if _, isSeparator := separators[currentRune]; !isSeparator {
+				acronymBuilder.WriteRune(currentRune)
+			}
+		}
+		lastRune = currentRune
+	}
+
+	return strings.ToUpper(acronymBuilder.String())
 }

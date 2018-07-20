@@ -79,4 +79,9 @@ var testCases = []struct {
 		":9",
 		false,
 	},
+	{
+		"String whose luhn resul would be divisible by ten if a letter was converted to an int",
+		"55>",
+		false,
+	},
 }
