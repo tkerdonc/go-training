@@ -17,27 +17,24 @@ func Valid(input string) bool {
 
 	spaceStrippingRegex := regexp.MustCompile(" ")
 	input = spaceStrippingRegex.ReplaceAllString(input, "")
-	isNumeric, _ := regexp.MatchString("^[0-9]", input)
+	isNumeric, _ := regexp.MatchString("^[0-9]+$", input)
 
 	if len(input) > 1 && isNumeric {
 		for i := len(input) - 1; i >= 0; i-- {
 			currentInt := int(input[i]) - '0'
 			//Matches every second rune starting from the right
 			//might be easier to than comparing (len(input) - i)%2 to 0
-			if (len(input)-1-i)%2 == 1 {
+			if (len(input)-1-i)&((1<<2)-1) == 1 {
 				currentInt = (currentInt * 2)
 				if currentInt > 9 {
 					currentInt -= 9
 				}
 			}
-
 			// Summing digit in the same iteration as doublings
 			digitSum += currentInt
 		}
-
 		//performing final %10 check
 		ok = digitSum%10 == 0
-
 	}
 	return ok
 }
