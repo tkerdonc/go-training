@@ -15,6 +15,10 @@ var stringTestCases = []acronymTest{
 		expected: "PNG",
 	},
 	{
+		input:    "Portable Network---Graphics",
+		expected: "PNG",
+	},
+	{
 		input:    "Ruby on Rails",
 		expected: "ROR",
 	},
