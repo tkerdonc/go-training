@@ -16,48 +16,57 @@ type matrix struct {
 	values [][]int
 }
 
+//  rowParsing parses a matrix row represented as a string, and converts
+//  it to a slice of integer values.
+//  parameters :
+//    * strRow : the string representation of the line, with cells
+//               separated by COLUMN_SEPARATOR
+func rowParsing(strRow string) ([]int, error) {
+	returnedRow := make([]int, 0)
+
+	for _, value := range strings.Split(strRow, COLUMN_SEPARATOR) {
+		intValue, convErr := strconv.Atoi(value)
+		if convErr != nil {
+			return make([]int, 0), convErr
+		}
+		returnedRow = append(returnedRow, intValue)
+	}
+	return returnedRow, nil
+}
+
 //  New creates a new matrix object based on a string representation of
 //  said matrix. This representation contains one or more non empty
 //  lines, each containing the same number of integer values, separated
 //  by spaces.
 func New(matrixString string) (*matrix, error) {
-	var numCols int = 0
-	var err error = nil
-
 	rows := strings.Split(matrixString, ROW_SEPARATOR)
 	var numRows int = len(rows)
 	var values = make([][]int, numRows)
 
-	for rowInd, row := range rows {
+	rowCells, parseError := rowParsing(rows[0])
+	if parseError != nil {
+		return nil, parseError
+	}
+	if len(rowCells) == 0 { // Check first line's dimension
+		return nil, errors.New("Empty first row")
+	}
+	values[0] = rowCells
+	var numCols = len(rowCells)
+
+	for rowInd, row := range rows[1:] {
 		row = strings.Trim(row, " ")
-		rowCells := strings.Split(row, COLUMN_SEPARATOR)
-		if rowInd == 0 {
-			numCols = len(rowCells)
-			if numCols == 0 { // Check first line's dimension
-				err = errors.New("Empty first row")
-			}
-		} else if len(rowCells) != numCols { // Check line size consistency
-			err = errors.New("Inconsistent line numbers")
+		rowCells, parseError := rowParsing(row)
+		if parseError != nil {
+			return nil, parseError
 		}
-
-		if err == nil {
-			for _, value := range rowCells {
-				intValue, convErr := strconv.Atoi(value)
-				if convErr != nil {
-					err = convErr
-					break
-				}
-				values[rowInd] = append(values[rowInd], intValue)
-			}
+		if len(rowCells) != numCols { // Check line size consistency
+			return nil, errors.New("Inconsistent line numbers")
 		}
+		values[rowInd+1] = rowCells
 	}
 
-	if err == nil {
-		m := matrix{values}
-		return &m, err
-	}
-
-	return nil, err
+	m := matrix{values}
+	return &m, nil
 }
 
 //  Rows returns the list of the rows of a matrix.
@@ -82,19 +91,18 @@ func (m *matrix) Cols() [][]int {
 	return columns
 }
 
-//  Set target a cell of a matrix by and sets its value to the one
-//  passed as para
+//  Set sets a cell in the matrix to a given value
 //  parameters:
 //    * row : row of the target cell
 //    * column : columnof the target cell
 //    * value : target value for the cell
 func (m *matrix) Set(row int, column int, value int) bool {
-	var ok = false
-	if row >= 0 && row < len(m.values) {
-		if column >= 0 && column < len(m.values[0]) {
-			m.values[row][column] = value
-			ok = true
-		}
+	if row < 0 || row >= len(m.values) {
+		return false
 	}
-	return ok
+	if column < 0 || column >= len(m.values[0]) {
+		return false
+	}
+	m.values[row][column] = value
+	return true
 }
